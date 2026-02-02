@@ -1,0 +1,32 @@
+{
+  "name": "blueprint-node-editor",
+  "version": "1.0.0",
+  "description": "Interactive Blueprint-style node editor with graph visualization",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/cli.ts",
+    "start": "node dist/index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "inquirer": "^9.2.12",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.9",
+    "@types/node": "^20.10.6",
+    "@types/uuid": "^9.0.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "keywords": [
+    "blueprint",
+    "node-editor",
+    "graph",
+    "visualization"
+  ],
+  "author": "EYETH1337",
+  "license": "MIT"
+}
