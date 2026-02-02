@@ -1,10 +1,17 @@
 import { Graph, Node, PinType, PinDirection } from '../../types';
 import { ArrowParser } from '../../parsers/arrowParser';
 import { AsciiTreeParser } from '../../parsers/asciiTreeParser';
+import { LegacyArrowParser } from '../../parsers/legacyArrowParser';
 import { GraphToUIAdapter, NodeData, ConnectionUI } from '../adapter';
 
 /**
  * Universal parser that detects format and uses appropriate parser
+ *
+ * Supports formats:
+ * 1. ASCII Tree: ├── Node1
+ * 2. Legacy Arrow (Russian colors): [Node] (Pin - Цвет) → [Node] (Pin - Цвет)
+ * 3. Modern Arrow: NodeA[out:Exec] -> NodeB[in:Exec]
+ * 4. Simple Arrow: NodeA -> NodeB -> NodeC
  */
 export const parseUniversal = (text: string): { nodes: NodeData[]; connections: ConnectionUI[] } => {
   let graph: Graph;
@@ -14,14 +21,21 @@ export const parseUniversal = (text: string): { nodes: NodeData[]; connections: 
     if (text.includes('├──') || text.includes('└──')) {
       // ASCII Tree format
       graph = AsciiTreeParser.parse(text);
+    } else if (text.includes('[') && text.includes('(') && (text.includes('→') || text.includes('->'))) {
+      // Legacy Arrow format: [NodeName] (PinName - Color) → [NodeName] (PinName - Color)
+      // This includes Russian color names like Белый, Зеленый, Желтый, etc.
+      graph = LegacyArrowParser.parse(text);
+    } else if (text.includes('[') && (text.includes('→') || text.includes('->'))) {
+      // Modern Arrow format with type annotations: NodeA[out:Exec] -> NodeB[in:Exec]
+      graph = ArrowParser.parse(text);
     } else if (text.includes('->') || text.includes('→')) {
-      // Arrow format
+      // Simple Arrow format: NodeA -> NodeB -> NodeC
       graph = ArrowParser.parse(text);
     } else if (text.includes('[') && text.includes(']')) {
-      // Arrow format with brackets
+      // Try arrow format with brackets
       graph = ArrowParser.parse(text);
     } else {
-      // Try to parse as arrow format by default
+      // Default: try as arrow format
       graph = ArrowParser.parse(text);
     }
   } catch (error) {
