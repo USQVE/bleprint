@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { X, Plus } from 'lucide-react';
-import { NodeData, Pin } from '../types';
+import React, { useRef, useState, useEffect } from 'react';
+import { X } from 'lucide-react';
+import { NodeData } from '../types';
+import Pin from './Pin';
 
 interface NodeProps {
   node: NodeData;
@@ -8,8 +9,8 @@ interface NodeProps {
   onDelete: (id: string) => void;
   onDisconnectPin: (pinId: string) => void;
   onPinMouseDown: (nodeId: string, pinId: string, e: React.MouseEvent) => void;
-  onPinMouseUp?: (pinId: string, e: React.MouseEvent) => void;
-  onNodeMouseUp?: (nodeId: string) => void;
+  onPinMouseUp: (nodeId: string, pinId: string, e: React.MouseEvent) => void;
+  onNodeMouseUp: (nodeId: string, e: React.MouseEvent) => void;
 }
 
 const Node: React.FC<NodeProps> = ({
@@ -19,275 +20,189 @@ const Node: React.FC<NodeProps> = ({
   onDisconnectPin,
   onPinMouseDown,
   onPinMouseUp,
-  onNodeMouseUp
+  onNodeMouseUp,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const nodeRef = useRef<HTMLDivElement>(null);
 
+  const headerBg =
+    node.color === 'red'
+      ? 'linear-gradient(180deg, #d32f2f 0%, #8b0000 100%)'
+      : node.color === 'blue'
+      ? 'linear-gradient(180deg, #2563eb 0%, #1e3a8a 100%)'
+      : 'linear-gradient(180deg, #525252 0%, #262626 100%)';
+
+  const avatarUrl = `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(node.title)}`;
+
   const handleMouseDown = (e: React.MouseEvent) => {
-    if ((e.target as any).closest('button') || (e.target as any).closest('.pin-circle')) return;
+    if (e.button !== 0) return;
+    e.stopPropagation();
     setIsDragging(true);
-    setDragStart({ x: e.clientX, y: e.clientY });
-  };
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging || !nodeRef.current) return;
-    const dx = e.clientX - dragStart.x;
-    const dy = e.clientY - dragStart.y;
-    onDrag(node.id, dx, dy);
-    setDragStart({ x: e.clientX, y: e.clientY });
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    onNodeMouseUp?.(node.id);
   };
 
   useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging, dragStart]);
+    if (!isDragging) return;
 
-  const getHeaderColor = () => {
-    switch (node.color) {
-      case 'red': return 'linear-gradient(135deg, #ff4444 0%, #cc0000 100%)';
-      case 'blue': return 'linear-gradient(135deg, #4488ff 0%, #0055ff 100%)';
-      case 'gray': return 'linear-gradient(135deg, #666666 0%, #333333 100%)';
-      default: return 'linear-gradient(135deg, #444444 0%, #222222 100%)';
-    }
-  };
+    const handleMouseMove = (e: MouseEvent) => {
+      onDrag(node.id, e.movementX, e.movementY);
+    };
 
-  const HEADER_H = 40;
-  const PIN_ROW_H = 26;
-  const PADDING = 10;
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
 
-  const getNodeShadow = () => {
-    switch (node.color) {
-      case 'red': return '0 0 20px rgba(255, 68, 68, 0.3)';
-      case 'blue': return '0 0 20px rgba(68, 136, 255, 0.3)';
-      default: return '0 0 20px rgba(100, 100, 100, 0.2)';
-    }
-  };
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, node.id, onDrag]);
 
   return (
     <div
       ref={nodeRef}
       className="node-card"
+      onMouseDown={(e) => e.stopPropagation()}
+      onMouseUp={(e) => onNodeMouseUp(node.id, e)}
       style={{
         position: 'absolute',
-        left: `${node.x}px`,
-        top: `${node.y}px`,
-        width: `${node.width}px`,
-        minHeight: `${node.height}px`,
-        background: 'linear-gradient(135deg, rgba(30, 30, 35, 0.95) 0%, rgba(20, 20, 25, 0.95) 100%)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        borderRadius: '12px',
-        boxShadow: getNodeShadow(),
+        left: node.x,
+        top: node.y,
+        width: node.width,
+        minHeight: node.height,
+        borderRadius: 8,
+        background: '#1c1c1c',
+        border: isDragging ? '2px solid #3b82f6' : '1px solid rgba(255,255,255,0.15)',
+        boxShadow: isDragging
+          ? '0 30px 60px rgba(0,0,0,0.8), 0 0 20px rgba(59,130,246,0.3)'
+          : '0 10px 30px rgba(0,0,0,0.5)',
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden',
-        cursor: isDragging ? 'grabbing' : 'grab',
+        zIndex: isDragging ? 5000 : 100,
         userSelect: 'none',
-        transition: 'box-shadow 0.2s',
-        backdropFilter: 'blur(12px)'
+        overflow: 'hidden',
       }}
-      onMouseDown={handleMouseDown}
-      onMouseUp={() => onNodeMouseUp?.(node.id)}
     >
-      {/* Header */}
+      {/* Glossy Header */}
       <div
+        onMouseDown={handleMouseDown}
         style={{
-          height: `${HEADER_H}px`,
-          background: getHeaderColor(),
-          padding: '0 12px',
+          height: 38,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
-          minHeight: '40px'
+          gap: 10,
+          padding: '0 12px',
+          background: headerBg,
+          cursor: isDragging ? 'grabbing' : 'grab',
+          position: 'relative',
+          borderBottom: '1px solid rgba(0,0,0,0.3)',
         }}
       >
-        <span
+        {/* Глянцевый блеск */}
+        <div
           style={{
-            fontSize: '11px',
-            fontWeight: 900,
-            color: 'white',
-            textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)',
-            letterSpacing: '0.05em',
-            flex: 1,
-            whiteSpace: 'nowrap',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '45%',
+            background: 'linear-gradient(to bottom, rgba(255,255,255,0.15), transparent)',
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Avatar */}
+        <div
+          style={{
+            width: 22,
+            height: 22,
+            borderRadius: 4,
+            background: 'rgba(0,0,0,0.2)',
+            border: '1px solid rgba(255,255,255,0.1)',
             overflow: 'hidden',
-            textOverflow: 'ellipsis'
+          }}
+        >
+          <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%' }} />
+        </div>
+
+        {/* Title */}
+        <div
+          style={{
+            flex: 1,
+            fontSize: 11,
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            color: 'white',
+            textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
           }}
         >
           {node.title}
-        </span>
+        </div>
+
+        {/* Delete Button */}
         <button
-          onClick={() => onDelete(node.id)}
-          style={{
-            background: 'rgba(255, 255, 255, 0.1)',
-            border: 'none',
-            color: '#ff6666',
-            width: '24px',
-            height: '24px',
-            borderRadius: '6px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            marginLeft: '8px'
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(node.id);
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255, 100, 100, 0.3)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)')}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'rgba(255,255,255,0.4)',
+            cursor: 'pointer',
+            padding: 4,
+            display: 'flex',
+            transition: 'color 0.2s',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = 'white')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
         >
           <X size={14} />
         </button>
       </div>
 
-      {/* Pins Container */}
-      <div style={{ flex: 1, display: 'flex', padding: `${PADDING}px 0` }}>
+      {/* Inputs and Outputs */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          padding: '6px 0',
+          background: 'rgba(0,0,0,0.2)',
+          flex: 1,
+        }}
+      >
         {/* Input Pins */}
-        <div className="pin-row" style={{ flex: 1, borderRight: '1px solid rgba(255, 255, 255, 0.05)' }}>
-          {node.inputs.map((pin, idx) => (
-            <PinRow
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {node.inputs.map((pin) => (
+            <Pin
               key={pin.id}
               pin={pin}
-              isLeft={true}
-              y={HEADER_H + (idx + 0.5) * PIN_ROW_H}
-              onMouseDown={(e) => onPinMouseDown(node.id, pin.id, e)}
-              onMouseUp={(e) => onPinMouseUp?.(pin.id, e)}
-              onDisconnect={() => onDisconnectPin(pin.id)}
+              onDisconnect={onDisconnectPin}
+              onMouseDown={(id, e) => onPinMouseDown(node.id, id, e)}
+              onMouseUp={(id, e) => onPinMouseUp(node.id, id, e)}
             />
           ))}
         </div>
 
         {/* Output Pins */}
-        <div className="pin-row" style={{ flex: 1 }}>
-          {node.outputs.map((pin, idx) => (
-            <PinRow
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-end' }}>
+          {node.outputs.map((pin) => (
+            <Pin
               key={pin.id}
               pin={pin}
-              isLeft={false}
-              y={HEADER_H + (idx + 0.5) * PIN_ROW_H}
-              onMouseDown={(e) => onPinMouseDown(node.id, pin.id, e)}
-              onMouseUp={(e) => onPinMouseUp?.(pin.id, e)}
-              onDisconnect={() => onDisconnectPin(pin.id)}
+              onDisconnect={onDisconnectPin}
+              onMouseDown={(id, e) => onPinMouseDown(node.id, id, e)}
+              onMouseUp={(id, e) => onPinMouseUp(node.id, id, e)}
             />
           ))}
         </div>
       </div>
-    </div>
-  );
-};
-
-interface PinRowProps {
-  pin: Pin;
-  isLeft: boolean;
-  y: number;
-  onMouseDown: (e: React.MouseEvent) => void;
-  onMouseUp: (e: React.MouseEvent) => void;
-  onDisconnect: () => void;
-}
-
-const PinRow: React.FC<PinRowProps> = ({ pin, isLeft, y, onMouseDown, onMouseUp, onDisconnect }) => {
-  return (
-    <div
-      className="pin-row"
-      style={{
-        height: '26px',
-        display: 'flex',
-        alignItems: 'center',
-        paddingRight: isLeft ? '8px' : undefined,
-        paddingLeft: !isLeft ? '8px' : undefined,
-        justifyContent: isLeft ? 'flex-start' : 'flex-end',
-        gap: '6px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.03)'
-      }}
-      onContextMenu={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onDisconnect();
-      }}
-    >
-      {isLeft && (
-        <>
-          <div
-            className="pin-circle"
-            onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
-            style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: pin.color,
-              border: '2px solid rgba(255, 255, 255, 0.4)',
-              cursor: 'crosshair',
-              boxShadow: `0 0 8px ${pin.color}`,
-              transition: 'all 0.2s',
-              flex: '0 0 auto'
-            }}
-            title={`${pin.name} (${pin.type})`}
-          />
-          <span
-            style={{
-              fontSize: '10px',
-              color: '#aaa',
-              flex: 1,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              minWidth: 0
-            }}
-          >
-            {pin.name}
-          </span>
-        </>
-      )}
-
-      {!isLeft && (
-        <>
-          <span
-            style={{
-              fontSize: '10px',
-              color: '#aaa',
-              flex: 1,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              minWidth: 0,
-              textAlign: 'right'
-            }}
-          >
-            {pin.name}
-          </span>
-          <div
-            className="pin-circle"
-            onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
-            style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: pin.color,
-              border: '2px solid rgba(255, 255, 255, 0.4)',
-              cursor: 'crosshair',
-              boxShadow: `0 0 8px ${pin.color}`,
-              transition: 'all 0.2s',
-              flex: '0 0 auto'
-            }}
-            title={`${pin.name} (${pin.type})`}
-          />
-        </>
-      )}
     </div>
   );
 };
