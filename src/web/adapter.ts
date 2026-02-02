@@ -1,12 +1,16 @@
-import { Graph, Node, Connection, Pin, PinType } from '../types';
+import { Graph, Node, Connection, Pin, PinType as CorePinType, PinDirection } from '../types';
 
 /**
- * React component types - compatible with existing visualization
+ * Type definitions for Web UI
+ * Synced with React component requirements
  */
-export interface PinUI {
+export type PinType = 'exec' | 'number' | 'vector' | 'bool' | 'other';
+export type NodeColor = 'red' | 'blue' | 'gray';
+
+export interface Pin {
   id: string;
   name: string;
-  type: 'exec' | 'bool' | 'number' | 'vector' | 'string' | 'object' | 'other';
+  type: PinType;
   color: string;
   isOutput: boolean;
 }
@@ -14,13 +18,17 @@ export interface PinUI {
 export interface NodeData {
   id: string;
   title: string;
+
   x: number;
   y: number;
+
   width: number;
   height: number;
-  color: 'red' | 'blue' | 'gray';
-  inputs: PinUI[];
-  outputs: PinUI[];
+
+  color: NodeColor;
+
+  inputs: Pin[];
+  outputs: Pin[];
 }
 
 export interface ConnectionUI {
@@ -32,25 +40,25 @@ export interface ConnectionUI {
   color: string;
 }
 
-export const PIN_TYPE_TO_UI: Record<PinType, 'exec' | 'bool' | 'number' | 'vector' | 'string' | 'object' | 'other'> = {
+// Core to UI type mapping
+export const PIN_TYPE_TO_UI: Record<CorePinType, PinType> = {
   'Exec': 'exec',
   'Boolean': 'bool',
   'Integer': 'number',
   'Float': 'number',
-  'String': 'string',
-  'Object': 'object',
   'Vector': 'vector',
+  'String': 'number',      // Map String to number by default
+  'Object': 'other',       // Map Object to other
   'Wildcard': 'other'
 };
 
-export const PIN_TYPE_COLORS: Record<string, string> = {
-  'exec': '#ff4444',      // Red
-  'bool': '#ffff00',      // Yellow
-  'number': '#4488ff',    // Blue
-  'vector': '#ffff88',    // Light yellow
-  'string': '#ff88ff',    // Pink
-  'object': '#ff8844',    // Orange
-  'other': '#888888'      // Gray
+// UI type to color mapping
+export const PIN_TYPE_COLORS: Record<PinType, string> = {
+  'exec': '#ff4444',       // Red
+  'bool': '#ffff00',       // Yellow
+  'number': '#4488ff',     // Blue
+  'vector': '#ffff88',     // Light yellow
+  'other': '#888888'       // Gray
 };
 
 /**
@@ -80,21 +88,21 @@ export class GraphToUIAdapter {
       width: node.width,
       height: node.height,
       color: getNodeCategory(node.title),
-      inputs: node.inputs.map(pin => this.adaptPin(pin, graph)),
-      outputs: node.outputs.map(pin => this.adaptPin(pin, graph))
+      inputs: node.inputs.map(pin => this.adaptPin(pin)),
+      outputs: node.outputs.map(pin => this.adaptPin(pin))
     };
   }
 
-  private static adaptPin(pin: Pin, graph: Graph): PinUI {
-    const uiType = PIN_TYPE_TO_UI[pin.type] || 'other';
+  private static adaptPin(corePin: Pin): Pin {
+    const uiType: PinType = PIN_TYPE_TO_UI[corePin.type] || 'other';
     const color = PIN_TYPE_COLORS[uiType];
 
     return {
-      id: pin.id,
-      name: pin.name,
+      id: corePin.id,
+      name: corePin.name,
       type: uiType,
       color,
-      isOutput: pin.direction === 'Output'
+      isOutput: corePin.direction === PinDirection.Output
     };
   }
 
@@ -160,18 +168,18 @@ export class UIToGraphAdapter {
     return graph;
   }
 
-  private static uiTypeToType(uiType: string): PinType {
-    const typeMap: Record<string, PinType> = {
+  private static uiTypeToType(uiType: string): CorePinType {
+    const typeMap: Record<string, CorePinType> = {
       'exec': 'Exec',
       'bool': 'Boolean',
       'number': 'Integer',
       'vector': 'Vector',
-      'string': 'String',
-      'object': 'Object',
       'other': 'Wildcard'
     };
     return typeMap[uiType] || 'Wildcard';
   }
 }
 
-export { Graph, Node, Connection, Pin, PinType } from '../types';
+// Re-export core types for convenience
+export { Graph, Node, Connection } from '../types';
+export type { Pin as CorePin, PinType as CorePinType, PinDirection } from '../types';
