@@ -14,6 +14,7 @@ import { INITIAL_TEXT_DATA } from './constants';
 import Node from './components/Node';
 import Connection from './components/Connection';
 import CommentBox from './components/CommentBox';
+import ControlPanel from './components/ControlPanel';
 
 type DragConnection = {
   startNodeId: string;
@@ -192,29 +193,82 @@ const App: React.FC = () => {
     reader.readAsText(file);
   };
 
+  // Node Management Functions
+  const handleCreateNode = useCallback((title: string, color: 'red' | 'blue' | 'gray') => {
+    const newNode: NodeData = {
+      id: `node_${Date.now()}_${Math.random()}`,
+      title,
+      x: Math.random() * 2000 + 500,
+      y: Math.random() * 2000 + 500,
+      width: 250,
+      height: 100,
+      color,
+      inputs: [],
+      outputs: [],
+    };
+    setNodes(prev => [...prev, newNode]);
+  }, []);
+
+  const handleDeleteNode = useCallback((nodeId: string) => {
+    setNodes(prev => prev.filter(n => n.id !== nodeId));
+    setConnections(prev => prev.filter(c => c.fromNode !== nodeId && c.toNode !== nodeId));
+  }, []);
+
+  const handleClearAll = useCallback(() => {
+    if (window.confirm('Are you sure? This will delete all nodes and connections.')) {
+      setNodes([]);
+      setConnections([]);
+      setTreeText('');
+    }
+  }, []);
+
+  const handleAutoLayout = useCallback(() => {
+    let xPos = 200;
+    let yPos = 200;
+    const cols = Math.ceil(Math.sqrt(nodes.length));
+
+    setNodes(prev =>
+      prev.map((node, idx) => {
+        const col = idx % cols;
+        const row = Math.floor(idx / cols);
+        return {
+          ...node,
+          x: 200 + col * 400,
+          y: 200 + row * 300,
+        };
+      })
+    );
+  }, [nodes.length]);
+
+  const handleRecenter = useCallback(() => {
+    transformRef.current?.resetTransform();
+  }, []);
+
   return (
     <div ref={viewportRef} style={{ width: '100vw', height: '100vh', background: '#0e0e10', overflow: 'hidden', position: 'relative' }}>
 
-      {/* HUD Toolbar */}
+      {/* Control Panel */}
+      <ControlPanel
+        nodes={nodes}
+        onCreateNode={handleCreateNode}
+        onClearAll={handleClearAll}
+        onExport={handleExport}
+        onImport={handleImport}
+        onRecenter={handleRecenter}
+        onAutoLayout={handleAutoLayout}
+      />
+
+      {/* Parser Toolbar */}
       <div style={{
-        position: 'absolute', top: 20, left: 20, zIndex: 1000, display: 'flex', gap: 8,
+        position: 'absolute', top: 20, right: 20, zIndex: 1000, display: 'flex', gap: 8,
         padding: '6px', background: 'rgba(25, 25, 28, 0.95)', border: '1px solid rgba(255,255,255,0.1)',
         borderRadius: 12, boxShadow: '0 10px 40px rgba(0,0,0,0.7)', backdropFilter: 'blur(12px)'
       }}>
         <button onClick={() => setShowEditor(!showEditor)} style={btnStyle} title="Open Parser Tool"><Database size={16} /></button>
         <button onClick={applyGraph} style={{ ...btnStyle, background: '#10b981' }} title="Parse Input"><Play size={16} fill="white" className="ml-0.5" /></button>
         <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.1)', alignSelf: 'center', margin: '0 4px' }} />
-        <button onClick={() => transformRef.current?.resetTransform()} style={btnStyle} title="Recenter Camera"><RotateCcw size={16} /></button>
-        <button onClick={() => { setNodes([]); setConnections([]); setTreeText(""); }} style={btnStyle} title="Clear Everything"><Trash2 size={16} /></button>
-        <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.1)', alignSelf: 'center', margin: '0 4px' }} />
         <button onClick={() => transformRef.current?.zoomIn(0.4)} style={btnStyle} title="Zoom In"><Plus size={16} /></button>
         <button onClick={() => transformRef.current?.zoomOut(0.4)} style={btnStyle} title="Zoom Out"><Minus size={16} /></button>
-        <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.1)', alignSelf: 'center', margin: '0 4px' }} />
-        <button onClick={handleExport} style={btnStyle} title="Export Graph"><Download size={16} /></button>
-        <label style={{ ...btnStyle, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-          <Upload size={16} />
-          <input type="file" onChange={handleImport} accept=".json,.arrow,.tree" style={{ display: 'none' }} />
-        </label>
       </div>
 
       <div style={{
