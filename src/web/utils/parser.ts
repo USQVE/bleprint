@@ -1,4 +1,5 @@
-import { Graph, Node, PinType, PinDirection } from '../../types';
+import { Node, PinType, PinDirection } from '../../types';
+import { Graph } from '../../graph';
 import { ArrowParser } from '../../parsers/arrowParser';
 import { AsciiTreeParser } from '../../parsers/asciiTreeParser';
 import { LegacyArrowParser } from '../../parsers/legacyArrowParser';

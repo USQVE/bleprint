@@ -3,7 +3,7 @@
  * Synced with actual React component requirements
  */
 
-export type PinType = 'exec' | 'number' | 'vector' | 'bool' | 'other';
+export type PinType = 'exec' | 'number' | 'string' | 'vector' | 'bool' | 'other';
 export type NodeColor = 'red' | 'blue' | 'gray';
 
 export interface Pin {

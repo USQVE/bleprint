@@ -1,10 +1,11 @@
-import { Graph, Node, Connection, Pin, PinType as CorePinType, PinDirection } from '../types';
+import { Node, Connection, Pin, PinType as CorePinType, PinDirection } from '../types';
+import { Graph } from '../graph';
 
 /**
  * Type definitions for Web UI
  * Synced with React component requirements
  */
-export type PinType = 'exec' | 'number' | 'vector' | 'bool' | 'other';
+export type PinType = 'exec' | 'number' | 'string' | 'vector' | 'bool' | 'other';
 export type NodeColor = 'red' | 'blue' | 'gray';
 
 export interface Pin {
@@ -47,7 +48,7 @@ export const PIN_TYPE_TO_UI: Record<CorePinType, PinType> = {
   'Integer': 'number',
   'Float': 'number',
   'Vector': 'vector',
-  'String': 'number',      // Map String to number by default
+  'String': 'string',      // Map String to string type
   'Object': 'other',       // Map Object to other
   'Wildcard': 'other'
 };
@@ -57,6 +58,7 @@ export const PIN_TYPE_COLORS: Record<PinType, string> = {
   'exec': '#ff4444',       // Red
   'bool': '#ffff00',       // Yellow
   'number': '#4488ff',     // Blue
+  'string': '#ff44ff',     // Magenta (like Unreal Engine)
   'vector': '#ffff88',     // Light yellow
   'other': '#888888'       // Gray
 };
@@ -173,6 +175,7 @@ export class UIToGraphAdapter {
       'exec': 'Exec',
       'bool': 'Boolean',
       'number': 'Integer',
+      'string': 'String',
       'vector': 'Vector',
       'other': 'Wildcard'
     };
@@ -181,5 +184,6 @@ export class UIToGraphAdapter {
 }
 
 // Re-export core types for convenience
-export { Graph, Node, Connection } from '../types';
+export { Graph } from '../graph';
+export { Node, Connection } from '../types';
 export type { Pin as CorePin, PinType as CorePinType, PinDirection } from '../types';
