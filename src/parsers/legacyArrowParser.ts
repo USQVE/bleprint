@@ -1,6 +1,5 @@
 import { Graph } from '../graph';
 import { Node, Connection, PinType } from '../types';
-import { getColorHex } from '../web/constants';
 
 /**
  * Legacy Arrow Parser for extended format with Russian color names

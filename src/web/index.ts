@@ -11,4 +11,5 @@ export * from './adapter';
 export * from './constants';
 export { default as App } from './App';
 export * from './utils/parser';
-export { Graph, Node, Connection, Pin, PinType, PinDirection } from '../types';
+export { Graph } from '../graph';
+export { Node, Connection, Pin, PinType, PinDirection } from '../types';

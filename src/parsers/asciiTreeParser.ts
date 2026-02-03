@@ -1,5 +1,5 @@
 import { Graph } from '../graph';
-import { Node, PinType } from '../types';
+import { Node, PinType, Connection } from '../types';
 
 export class AsciiTreeParser {
   /**
@@ -75,7 +75,7 @@ export class AsciiTreeParser {
         const childNode = graph.getNode(nodeMap.get(treeNode.id)!);
 
         if (parentNode && childNode && parentNode.outputs.length > 0 && childNode.inputs.length > 0) {
-          const conn = new (require('../types')).Connection(
+          const conn = new Connection(
             parentNode.id,
             parentNode.outputs[0].id,
             childNode.id,

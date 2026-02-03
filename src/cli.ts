@@ -3,7 +3,8 @@
 // For interactive graph editing, use the web UI at http://localhost:3000
 
 import chalk from 'chalk';
-import { Graph, Node } from './types';
+import { Graph } from './graph';
+import { Node } from './types';
 
 export class BlueprintCLI {
   private graph: Graph;
@@ -35,4 +36,5 @@ export class BlueprintCLI {
 }
 
 // Export for programmatic use
-export { Graph, Node } from './types';
+export { Graph } from './graph';
+export { Node } from './types';

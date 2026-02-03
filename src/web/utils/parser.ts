@@ -3,7 +3,7 @@ import { Graph } from '../../graph';
 import { ArrowParser } from '../../parsers/arrowParser';
 import { AsciiTreeParser } from '../../parsers/asciiTreeParser';
 import { LegacyArrowParser } from '../../parsers/legacyArrowParser';
-import { GraphToUIAdapter, NodeData, ConnectionUI } from '../adapter';
+import { GraphToUIAdapter, UIToGraphAdapter, NodeData, ConnectionUI } from '../adapter';
 
 /**
  * Universal parser that detects format and uses appropriate parser
@@ -45,8 +45,7 @@ export const parseUniversal = (text: string): { nodes: NodeData[]; connections: 
   }
 
   // Convert to UI format
-  const adapter = new GraphToUIAdapter();
-  return adapter.adaptGraph(graph);
+  return GraphToUIAdapter.adaptGraph(graph);
 };
 
 /**
@@ -193,7 +192,6 @@ export const buildAsciiTreeExec = (nodes: NodeData[], connections: ConnectionUI[
  */
 export const exportToArrow = (nodes: NodeData[], connections: ConnectionUI[]): string => {
   // Build a temporary Graph object for exporting
-  const { UIToGraphAdapter } = require('../adapter');
   const graph = UIToGraphAdapter.adaptToGraph(nodes, connections);
   return ArrowParser.generate(graph);
 };
@@ -203,7 +201,6 @@ export const exportToArrow = (nodes: NodeData[], connections: ConnectionUI[]): s
  */
 export const exportToTree = (nodes: NodeData[], connections: ConnectionUI[]): string => {
   // Build a temporary Graph object for exporting
-  const { UIToGraphAdapter } = require('../adapter');
   const graph = UIToGraphAdapter.adaptToGraph(nodes, connections);
   return AsciiTreeParser.generate(graph);
 };

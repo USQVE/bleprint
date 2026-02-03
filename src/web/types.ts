@@ -1,6 +1,5 @@
 /**
  * Web UI types - compatible with React visualization
- * Synced with actual React component requirements
  */
 
 export type PinType = 'exec' | 'number' | 'string' | 'vector' | 'bool' | 'other';
