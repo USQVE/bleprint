@@ -6,13 +6,7 @@ export default defineConfig({
   server: {
     port: 3000,
     open: false,
-    allowedHosts: [
-      '*.csb.app',
-      '*.replit.dev',
-      'localhost',
-      '127.0.0.1',
-      '::1'
-    ]
+    allowedHosts: 'all'
   },
   build: {
     outDir: 'dist',
