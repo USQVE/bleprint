@@ -5,13 +5,27 @@ export { Node, Connection, Pin, PinType, PinDirection, PIN_COLORS } from './type
 export { ArrowParser } from './parsers/arrowParser';
 export { AsciiTreeParser } from './parsers/asciiTreeParser';
 
-// CLI entry point
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+// CLI entry point (Node.js only)
+async function initCLI() {
+  if (typeof process === 'undefined' || !process.versions || !process.versions.node) {
+    return; // Not running in Node.js
+  }
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+  try {
+    const { fileURLToPath } = await import('url');
+    const { dirname } = await import('path');
 
-if (process.argv[1] === __filename) {
-  import('./cli.js').catch(err => console.error('Failed to load CLI:', err));
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
+    if (process.argv[1] === __filename) {
+      await import('./cli.js');
+    }
+  } catch (err) {
+    console.error('Failed to load CLI:', err);
+  }
 }
+
+initCLI().catch(() => {
+  // Ignore errors in browser environment
+});
