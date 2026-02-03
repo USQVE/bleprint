@@ -7,9 +7,11 @@ export default defineConfig({
     port: 3000,
     open: false,
     allowedHosts: [
-      'n8qz2y-3000.csb.app',
+      '*.csb.app',
+      '*.replit.dev',
       'localhost',
-      '127.0.0.1'
+      '127.0.0.1',
+      '::1'
     ]
   },
   build: {
