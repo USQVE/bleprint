@@ -1,5 +1,5 @@
 import { Graph } from '../graph';
-import { Node, PinType } from '../types';
+import { Node, PinType, Connection } from '../types';
 
 export interface ArrowGraphDefinition {
   nodes: Array<{
@@ -127,7 +127,7 @@ export class ArrowParser {
             const fromPin = fromNode.outputs[0];
             const toPin = toNode.inputs[0];
 
-            const conn = new (require('../types')).Connection(
+            const conn = new Connection(
               fromNode.id,
               fromPin.id,
               toNode.id,
