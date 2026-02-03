@@ -415,6 +415,23 @@ const App: React.FC = () => {
         </div>
       )}
 
+      {/* Version Badge */}
+      <div style={{
+        position: 'fixed',
+        bottom: 12,
+        right: 12,
+        fontSize: '11px',
+        color: 'rgba(255,255,255,0.5)',
+        fontFamily: 'monospace',
+        zIndex: 999,
+        padding: '4px 8px',
+        background: 'rgba(0,0,0,0.3)',
+        borderRadius: 4,
+        border: '1px solid rgba(255,255,255,0.1)'
+      }}>
+        v2.0.1
+      </div>
+
       <style>{`
         @keyframes slideIn { from { transform: translateX(80px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         body { background: #0e0e10; color: white; margin: 0; overflow: hidden; font-family: 'Inter', sans-serif; }
