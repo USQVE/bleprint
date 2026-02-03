@@ -97,18 +97,18 @@ const App: React.FC = () => {
     setDragConnection({ startNodeId: nodeId, startPinId: pinId, startX: x, startY: y, endX: x, endY: y, color: pin.color });
   }, [getPinPos, nodesById]);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent): void => {
     if (!dragConnection || !transformRef.current || !viewportRef.current) return;
     const { scale, positionX, positionY } = transformRef.current.instance.transformState;
     const rect = viewportRef.current.getBoundingClientRect();
-    setDragConnection(prev => prev ? {
+    setDragConnection((prev: DragConnection): DragConnection => prev ? {
       ...prev,
       endX: (e.clientX - rect.left - positionX) / scale,
       endY: (e.clientY - rect.top - positionY) / scale
     } : null);
   }, [dragConnection]);
 
-  const finalizeConnection = (n1: string, p1: string, n2: string, p2: string, color: string) => {
+  const finalizeConnection = (n1: string, p1: string, n2: string, p2: string, color: string): void => {
     const startPin = [...(nodesById.get(n1)?.inputs || []), ...(nodesById.get(n1)?.outputs || [])].find(p => p.id === p1);
     const endPin = [...(nodesById.get(n2)?.inputs || []), ...(nodesById.get(n2)?.outputs || [])].find(p => p.id === p2);
     if (!startPin || !endPin || startPin.isOutput === endPin.isOutput) return;
@@ -137,13 +137,13 @@ const App: React.FC = () => {
     };
   }, [handleMouseMove]);
 
-  const handleCopyTree = () => {
+  const handleCopyTree = (): void => {
     navigator.clipboard.writeText(treeText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleExport = () => {
+  const handleExport = (): void => {
     let content = '';
     let filename = '';
 
@@ -171,12 +171,12 @@ const App: React.FC = () => {
     }
   };
 
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = (event: ProgressEvent<FileReader>): void => {
       const content = event.target?.result as string;
       try {
         if (file.name.endsWith('.json')) {
@@ -194,7 +194,7 @@ const App: React.FC = () => {
   };
 
   // Node Management Functions
-  const handleCreateNode = useCallback((title: string, color: 'red' | 'blue' | 'gray') => {
+  const handleCreateNode = useCallback((title: string, color: 'red' | 'blue' | 'gray'): void => {
     const newNode: NodeData = {
       id: `node_${Date.now()}_${Math.random()}`,
       title,
@@ -206,15 +206,15 @@ const App: React.FC = () => {
       inputs: [],
       outputs: [],
     };
-    setNodes(prev => [...prev, newNode]);
+    setNodes((prev: NodeData[]): NodeData[] => [...prev, newNode]);
   }, []);
 
-  const handleDeleteNode = useCallback((nodeId: string) => {
-    setNodes(prev => prev.filter(n => n.id !== nodeId));
-    setConnections(prev => prev.filter(c => c.fromNode !== nodeId && c.toNode !== nodeId));
+  const handleDeleteNode = useCallback((nodeId: string): void => {
+    setNodes((prev: NodeData[]): NodeData[] => prev.filter(n => n.id !== nodeId));
+    setConnections((prev: ConnectionType[]): ConnectionType[] => prev.filter(c => c.fromNode !== nodeId && c.toNode !== nodeId));
   }, []);
 
-  const handleClearAll = useCallback(() => {
+  const handleClearAll = useCallback((): void => {
     if (window.confirm('Are you sure? This will delete all nodes and connections.')) {
       setNodes([]);
       setConnections([]);
@@ -222,13 +222,11 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const handleAutoLayout = useCallback(() => {
-    let xPos = 200;
-    let yPos = 200;
+  const handleAutoLayout = useCallback((): void => {
     const cols = Math.ceil(Math.sqrt(nodes.length));
 
-    setNodes(prev =>
-      prev.map((node, idx) => {
+    setNodes((prev: NodeData[]): NodeData[] =>
+      prev.map((node: NodeData, idx: number): NodeData => {
         const col = idx % cols;
         const row = Math.floor(idx / cols);
         return {
@@ -240,7 +238,7 @@ const App: React.FC = () => {
     );
   }, [nodes.length]);
 
-  const handleRecenter = useCallback(() => {
+  const handleRecenter = useCallback((): void => {
     transformRef.current?.resetTransform();
   }, []);
 
