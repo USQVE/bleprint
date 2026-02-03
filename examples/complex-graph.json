@@ -1,0 +1,76 @@
+{
+  "nodes": [
+    {
+      "id": "node_1",
+      "title": "Player Input",
+      "category": "Input",
+      "x": 0,
+      "y": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "jump",
+          "type": "Exec"
+        },
+        {
+          "name": "move",
+          "type": "Vector"
+        }
+      ]
+    },
+    {
+      "id": "node_2",
+      "title": "Apply Velocity",
+      "category": "Physics",
+      "x": 250,
+      "y": 0,
+      "inputs": [
+        {
+          "name": "velocity",
+          "type": "Vector"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "on_applied",
+          "type": "Exec"
+        }
+      ]
+    },
+    {
+      "id": "node_3",
+      "title": "Add Force",
+      "category": "Physics",
+      "x": 250,
+      "y": 150,
+      "inputs": [
+        {
+          "name": "force",
+          "type": "Vector"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "done",
+          "type": "Exec"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "conn_1",
+      "fromNodeId": "node_1",
+      "toNodeId": "node_2",
+      "fromPinIndex": 1,
+      "toPinIndex": 0
+    },
+    {
+      "id": "conn_2",
+      "fromNodeId": "node_1",
+      "toNodeId": "node_3",
+      "fromPinIndex": 1,
+      "toPinIndex": 0
+    }
+  ]
+}

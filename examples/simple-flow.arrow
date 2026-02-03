@@ -1,0 +1,2 @@
+EventTick[out:Exec] -> GetActorLocation[in:Exec|out:Vector]
+GetActorLocation -> PrintString[in:Vector]

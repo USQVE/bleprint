@@ -1,0 +1,10 @@
+├── Start
+│   ├── Check Condition
+│   │   ├── If True
+│   │   │   ├── Execute Branch A
+│   │   │   └── Log Result
+│   │   └── If False
+│   │       ├── Execute Branch B
+│   │       └── Log Result
+│   └── End
+└── Cleanup
