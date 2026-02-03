@@ -1,16 +1,30 @@
 # Blueprint Node Editor
 
-A comprehensive interactive node editor for visualizing and manipulating graph structures in Unreal Engine Blueprint style. Features both a powerful **CLI interface** and a modern **React-based web UI** with real-time visualization.
+A comprehensive interactive node editor for visualizing and manipulating graph structures in Unreal Engine Blueprint style. Features a modern **React-based web UI** with real-time visualization and interactive graph editing.
+
+## 🚀 Quick Start
+
+### **Open in Stackblitz** (No installation needed!)
+[![Open in Stackblitz](https://img.shields.io/badge/Open%20in-Stackblitz-blue?logo=stackblitz)](https://stackblitz.com/github/EYETH1337/blueprint)
+
+Or run locally:
+```bash
+npm install
+npm run dev
+```
 
 ## Features
 
-### 🖥️ **Dual Interface**
-- **CLI**: Menu-driven terminal interface for scripting and automation
-- **Web UI**: Interactive visual editor with drag-and-drop, zoom/pan
+### 🎨 **Interactive Web UI**
+- Modern React-based visual editor with drag-and-drop
+- Pan/zoom canvas controls
+- Real-time connection creation
+- Multi-format support (Arrow, Tree, JSON)
 
 ✨ **Interactive Editing**
-- Intuitive menu-driven CLI interaction
-- Real-time visual feedback in React
+- Intuitive drag-and-drop node positioning
+- Visual connection creation via pin dragging
+- Real-time graph updates and visualization
 - Multi-format support (Arrow, Tree, JSON)
 
 📊 **Graph Visualization**
@@ -43,64 +57,57 @@ A comprehensive interactive node editor for visualizing and manipulating graph s
 
 ## Installation & Setup
 
+### Local Development
+
 ```bash
-# Install dependencies
+# Clone and install
+git clone https://github.com/EYETH1337/blueprint.git
+cd blueprint
 npm install
 
-# Build TypeScript
-npm run build
-
-# (Optional) Build for web deployment
-npm run build:web
-```
-
-## Quick Start
-
-### CLI Interface
-```bash
+# Start development server
 npm run dev
 ```
-Browse the interactive menu to create nodes, connect them, and manage your graph.
 
-### Web UI
+Opens at http://localhost:3000
+
+### Build for Production
+
 ```bash
-# Start development server (requires React/Vite setup)
-npm run dev:web
+npm run build
+# Output in ./dist
 ```
-Open browser and get an interactive visual editor with drag-and-drop support.
+
+### Online (Stackblitz)
+
+No installation needed! Click the badge above to open in Stackblitz editor in your browser.
 
 ## Usage
 
-### Interactive CLI
-
-```bash
-npm run dev
-```
-
-This launches the interactive menu-driven interface where you can:
-- Create and manage nodes
-- Connect nodes with pins
-- Visualize your graph
-- Import/export in multiple formats
-- Save and load graphs
-
 ### Web UI Interface
 
-The React-based web UI provides an interactive visual editor with:
-- **Drag-and-drop** node positioning
-- **Pan & zoom** canvas controls
-- **Real-time** connection creation by dragging between pins
-- **Visual feedback** with node colors and pin type indicators
-- **Import/Export** panel for format conversion
-- **Execution tree** preview showing control flow
-- **Format detection** for automatic parsing
+Once started (locally or on Stackblitz), the React-based editor provides:
 
-Features:
+**Canvas Controls:**
+- **Drag nodes** - Reposition nodes on the canvas
+- **Drag pins** - Create connections between nodes
+- **Right-click + drag** - Pan the view
+- **+/- buttons** - Zoom in/out
+- **Auto-layout** - Organize nodes automatically
+
+**Parser Tool:**
+- **Database icon** - Open universal parser
+- **Play button** - Parse and apply graph
+- Supports Arrow, Tree, and JSON formats
+
+**Features:**
 - Universal format parser (auto-detects Arrow, Tree, JSON)
 - Execution tree generation (Exec flow visualization)
 - Copy/paste execution tree to clipboard
 - Download/upload graphs in multiple formats
 - Real-time syntax highlighting
+- Node creation and deletion
+- Visual feedback with node colors and pin type indicators
 
 See [Web UI Documentation](./src/web/README.md) for detailed guide.
 
@@ -208,10 +215,10 @@ const graph = AsciiTreeParser.parse(`
   - `ArrowParser` - Parse/generate Arrow format
   - `AsciiTreeParser` - Parse/generate Tree format
 
-- **cli.ts** - Terminal interface
-  - Menu-driven navigation
-  - Interactive prompts
-  - File I/O
+- **cli.ts** - Programmatic API
+  - Core engine exports
+  - Graph manipulation
+  - Format parsing
 
 **Web UI (src/web/)**
 
@@ -306,19 +313,16 @@ Result: Hierarchical structure automatically laid out.
 }
 ```
 
-### CLI - Programmatic Creation
+### Web UI - Interactive Creation
 
-```bash
-npm run dev
-```
-
-Then use the interactive menu to:
-1. Create Node 'Start' category 'Events'
-2. Add Output Pin 'exec' type 'Exec'
-3. Create Node 'End' category 'Events'
-4. Add Input Pin 'exec' type 'Exec'
-5. Connect nodes
-6. Display graph
+1. Open the Web UI (local or Stackblitz)
+2. Click Database icon to open the Parser Tool
+3. In the Source Code editor, paste:
+   ```
+   Start[out:Exec] -> End[in:Exec]
+   ```
+4. Click "Parse & Sync Blueprint"
+5. Drag nodes around and create new connections by dragging between pins
 
 ### Programmatic Integration
 
