@@ -45,8 +45,7 @@ export const parseUniversal = (text: string): { nodes: NodeData[]; connections: 
   }
 
   // Convert to UI format
-  const adapter = new GraphToUIAdapter();
-  return adapter.adaptGraph(graph);
+  return GraphToUIAdapter.adaptGraph(graph);
 };
 
 /**
