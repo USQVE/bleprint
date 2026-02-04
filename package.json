@@ -1,36 +1,23 @@
 {
   "name": "blueprint-node-editor",
-  "version": "2.0.1",
-  "description": "Interactive Blueprint-style node editor with web-first React UI - Stackblitz compatible",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
-  "main": "dist/index.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-zoom-pan-pinch": "^3.5.4",
-    "lucide-react": "^0.408.0",
-    "uuid": "^9.0.1",
-    "chalk": "^4.1.2"
+    "react-dom": "^19.2.4",
+    "lucide-react": "^0.563.0",
+    "react": "^19.2.4",
+    "react-zoom-pan-pinch": "^3.7.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.43",
-    "@types/react-dom": "^18.2.17",
-    "@types/node": "^20.10.6",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.8",
-    "@vitejs/plugin-react": "^4.2.1"
-  },
-  "keywords": [
-    "blueprint",
-    "node-editor",
-    "graph",
-    "visualization"
-  ],
-  "author": "EYETH1337",
-  "license": "MIT"
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
 }

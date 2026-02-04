@@ -1,0 +1,5 @@
+{
+  "name": "Blueprint Node Editor",
+  "description": "A high-performance visual node editor inspired by Unreal Engine Blueprints, featuring zooming, panning, text-based graph generation, and interactive pin management.",
+  "requestFramePermissions": []
+}
